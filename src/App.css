@@ -27,3 +27,11 @@
   stroke: #000;
   stroke-width: 1;
 }
+
+text.val{
+  font-size: 16px;
+}
+
+text.coord{
+  font-size: 10px;
+}
