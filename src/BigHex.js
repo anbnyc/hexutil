@@ -15,16 +15,16 @@ class BigHex extends Component {
   }
 
   handleUserInput(hexRow,hexCell,cellValue){
-    cellValue = parseInt(cellValue);
+    cellValue = parseInt(cellValue,10);
     if(this.state.cellValue !== cellValue){
       const data = this.state.data;
       data[hexRow][hexCell].value = cellValue;
       const ruleCheck = checkRules(data);
-      console.log(ruleCheck);
       this.setState({
         data: ruleCheck.data,
         cellValue: cellValue,
-        ruleOK: ruleCheck.ruleOK
+        ruleOK: ruleCheck.ruleOK,
+        ruleBreakers: ruleCheck.ruleBreakers
       });
     }
   }
@@ -40,6 +40,7 @@ class BigHex extends Component {
         value: null,
         color: "gray",
         row: i,
+        cellLabel: j,
         cell: j+Math.max(0, i - (hexPerSide - 1)),
         ruleValue: 0,
         ruleOK: true,
@@ -53,11 +54,91 @@ class BigHex extends Component {
     });
     
     // starting vals
-    data[0][4].color = "blue"; data[0][4].value = 130321;
-    data[2][0].color = "red"; data[2][0].value = 169;
-    data[8][2].color = "green"; data[8][2].value = 1;
-    data[6][0].color = "red"; data[6][0].value = 0;
-    data[6][6].color = "red"; data[6][6].value = 0;
+    // data[0][4].color = "blue"; data[0][4].value = 130321;
+    // data[2][0].color = "red"; data[2][0].value = 169;
+    // data[8][2].color = "green"; data[8][2].value = 1;
+    // data[6][0].color = "red"; data[6][0].value = 0;
+    // data[6][6].color = "red"; data[6][6].value = 0;
+
+    let hardCode = [
+      [130490,"red"],
+      [13,"black"],
+      [130321,"red"],
+      [130321,"red"],
+      [130321,"blue"],
+
+      [169,"red"],
+      [0,"red"],
+      [0,"red"],
+      [0,"red"],
+      [130321,"red"],
+      [130321,"red"],
+
+      [169,"red"],
+      [0,"red"],
+      [19,"black"],
+      [0,"red"],
+      [130321,"red"],
+      [0,"red"],
+      [130321,"red"],
+
+      [169,"blue"],
+      [169,"green"],
+      [169,"red"],
+      [169,"red"],
+      [130490,"red"],
+      [169,"red"],
+      [169,"red"],
+      [13,"black"],
+
+      [169,"red"],
+      [169,"red"],
+      [0,"red"],
+      [19,"black"],
+      [130321,"green"],
+      [19,"black"],
+      [0,"red"],
+      [0,"red"],
+      [130321,"red"],
+
+      [0,"red"],
+      [169,"red"],
+      [0,"red"],
+      [19,"black"],
+      [0,"red"],
+      [0,"red"],
+      [0,"red"],
+      [0,"red"],
+
+      [0,"red"],
+      [169,"red"],
+      [130321,"red"],
+      [0,"red"],
+      [0,"red"],
+      [0,"red"],
+      [0,"red"],
+
+      [0,"red"],
+      [130490,"red"],
+      [0,"red"],
+      [0,"red"],
+      [0,"red"],
+      [0,"red"],
+
+      [130321,"red"],
+      [169,"red"],
+      [1,"green"],
+      [0,"red"],
+      [0,"red"]
+    ]
+
+    _.each(data,row=>{
+      _.each(row,cell=>{
+        let entry = hardCode.shift();
+        cell.value = entry[0];
+        cell.color = entry[1];
+      });
+    });
 
     this.setState({
       data: data
@@ -75,11 +156,17 @@ class BigHex extends Component {
   render() {
     const dim = (Math.sqrt(3) * this.props.sideLen * (2*this.props.hexPerSide-1));
     return <div>
-      <Editor 
-        onUserInput={this.handleUserInput}
-        hexRow={this.state.hexRow}
-        hexCell={this.state.hexCell}
-        cellValue={this.state.cellValue} />
+      <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around"}}>
+        <Editor 
+          onUserInput={this.handleUserInput}
+          hexRow={this.state.hexRow}
+          hexCell={this.state.hexCell}
+          cellValue={this.state.cellValue} />
+        <pre>
+          <span>{"PASSES ALL RULES: "+this.state.ruleOK}</span><br/>
+          <span>{"VIOLATIONS: "+this.state.ruleBreakers}</span>
+        </pre>
+      </div>
       <svg id="big-hex" height={dim} width={dim}></svg>
     </div>;
   }
@@ -87,32 +174,39 @@ class BigHex extends Component {
 }
 
 function checkRules(data){
+  let flatData = _.reduce(data,(t,v)=>t.concat(v),[]);
   let ruleCheck = {
-    ruleOK: true
+    ruleOK: true,
+    ruleBreakers: []
   }
-  data.forEach(cell=>{
+  flatData.forEach(cell=>{
+    const matchR = cell.row;
+    const matchC = cell.cell;
     if(cell.color === "red"){
-      cell.ruleValue = _.chain(data)
-        .filter(o=>o.color === "blue")
+      cell.ruleValue = _.chain(flatData)
+        .filter(o=>o.color === "blue" && inView(o,matchR,matchC))
         .reduce((t,v)=>t+v.value,0)
         .value();
     } else if (cell.color === "blue"){
-      cell.ruleValue = _.chain(data)
-        .filter(o=>o.color === "green")
+      cell.ruleValue = _.chain(flatData)
+        .filter(o=>o.color === "green" && inView(o,matchR,matchC))
         .reduce((t,v)=>Math.max(t,v.value),0)
         .value();
     } else if (cell.color === "green"){
-      cell.ruleValue = _.chain(data)
-        .filter(o=>o.color === "black")
+      cell.ruleValue = _.chain(flatData)
+        .filter(o=>o.color === "black" && inView(o,matchR,matchC))
         .reduce((t,v)=>t*v.value,1)
         .value();
     } else {
-      cell.ruleValue = data.filter(o=>o.color === "red").length;
+      cell.ruleValue = flatData.filter(o=>o.color === "red" && inView(o,matchR,matchC)).length;
     }
     cell.ruleOK = cell.ruleValue === cell.value;
+    if(!cell.ruleOK){
+      ruleCheck.ruleBreakers.push("("+cell.row+","+cell.cell+"):"+cell.ruleValue);
+    }
     ruleCheck.ruleOK = ruleCheck.ruleOK && cell.ruleOK;
   });
-  ruleCheck.data = data;
+  ruleCheck.data = unflattenArray(data,flatData);
   return ruleCheck;
 }
 
@@ -173,7 +267,7 @@ function drawHexes({hexPerSide,sideLen},data){
     .attr("class","coord")
     .attr("x",-1.5*sideLen)
     .attr("y",-.5*r3o2S)
-    .text(d=>"("+d.row+","+d.cell+")");
+    .text(d=>"("+d.row+","+d.cellLabel+")");
 
   tiles
     .on("click",tileClick)
@@ -182,6 +276,7 @@ function drawHexes({hexPerSide,sideLen},data){
 
 }
 
+/*** D3 INTERACTIVITY FUNCTIONS ***/
 function tileClick(tile){
   d3.select(this).select("polygon")
     .style("fill",d=>d.toggleColor());
@@ -193,7 +288,7 @@ function tileHover(tile){
   const matchDiff = matchR - matchC;
   d3.selectAll("polygon")
     .style("opacity",d=>{
-      if(d.row === matchR || d.cell === matchC || d.row-d.cell === matchDiff){
+      if(inView(d,matchR,matchC,matchDiff)){
         return .6;
       } else {
         return .2;
@@ -203,6 +298,20 @@ function tileHover(tile){
 
 function tileClear(){
   d3.selectAll("polygon").style("opacity",.2);
+}
+
+/*** UTILITY FUNCTIONS ***/
+function unflattenArray(unflatArray,flatArray){
+  _.each(unflatArray,row=>{
+    _.each(row,cell=>{
+      cell = flatArray.shift();
+    });
+  });
+  return unflatArray;
+}
+
+function inView(tile,matchR,matchC){
+  return tile.row === matchR || tile.cell === matchC || tile.row-tile.cell === matchR - matchC;
 }
 
 function hexPath(s,r3o2S){
