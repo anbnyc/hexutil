@@ -18,22 +18,26 @@ class Editor extends Component {
 
   render() {
     return (
-      <div>
-        <input
+      <div className="padding">
+        Row: [<input
           type="number"
           id="hexRow"
+          min={0}
+          max={8}
           value={this.props.hexRow}
           ref={(input)=>this.hexRow = input}
           onChange={this.handleChange}
-          ></input>
-        <input
+          ></input>]
+        Cell: [<input
           type="number"
           id="hexCell"
+          min={0}
+          max={8}
           value={this.props.hexCell}
           ref={(input)=>this.hexCell = input}
           onChange={this.handleChange}
-          ></input>
-        <input 
+          ></input>]
+        Value: <input 
           type="number"
           id="cellInput"
           value={this.props.cellValue}
