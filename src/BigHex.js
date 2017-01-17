@@ -19,9 +19,12 @@ class BigHex extends Component {
     if(this.state.cellValue !== cellValue){
       const data = this.state.data;
       data[hexRow][hexCell].value = cellValue;
+      const ruleCheck = checkRules(data);
+      console.log(ruleCheck);
       this.setState({
-        data: data,
-        cellValue: cellValue
+        data: ruleCheck.data,
+        cellValue: cellValue,
+        ruleOK: ruleCheck.ruleOK
       });
     }
   }
@@ -34,18 +37,27 @@ class BigHex extends Component {
       var rowlen = (2*hexPerSide - 1) - Math.abs((hexPerSide - 1) - i);
       let row = [];
       _.times(rowlen,j=>row.push({
-        value: 0,
-        color: "red",
+        value: null,
+        color: "gray",
         row: i,
         cell: j+Math.max(0, i - (hexPerSide - 1)),
+        ruleValue: 0,
+        ruleOK: true,
         toggleColor: function(){
-          const colors = ["red","blue","green","black"];
-          const newColor = colors[(colors.indexOf(this.color)+1) % 4];
+          const colors = ["red","blue","green","black","gray"];
+          const newColor = colors[(colors.indexOf(this.color)+1) % colors.length];
           return this.color = newColor;
         }
       }));
       data.push(row);
     });
+    
+    // starting vals
+    data[0][4].color = "blue"; data[0][4].value = 130321;
+    data[2][0].color = "red"; data[2][0].value = 169;
+    data[8][2].color = "green"; data[8][2].value = 1;
+    data[6][0].color = "red"; data[6][0].value = 0;
+    data[6][6].color = "red"; data[6][6].value = 0;
 
     this.setState({
       data: data
@@ -72,6 +84,36 @@ class BigHex extends Component {
     </div>;
   }
   
+}
+
+function checkRules(data){
+  let ruleCheck = {
+    ruleOK: true
+  }
+  data.forEach(cell=>{
+    if(cell.color === "red"){
+      cell.ruleValue = _.chain(data)
+        .filter(o=>o.color === "blue")
+        .reduce((t,v)=>t+v.value,0)
+        .value();
+    } else if (cell.color === "blue"){
+      cell.ruleValue = _.chain(data)
+        .filter(o=>o.color === "green")
+        .reduce((t,v)=>Math.max(t,v.value),0)
+        .value();
+    } else if (cell.color === "green"){
+      cell.ruleValue = _.chain(data)
+        .filter(o=>o.color === "black")
+        .reduce((t,v)=>t*v.value,1)
+        .value();
+    } else {
+      cell.ruleValue = data.filter(o=>o.color === "red").length;
+    }
+    cell.ruleOK = cell.ruleValue === cell.value;
+    ruleCheck.ruleOK = ruleCheck.ruleOK && cell.ruleOK;
+  });
+  ruleCheck.data = data;
+  return ruleCheck;
 }
 
 function updateHexes(data){
