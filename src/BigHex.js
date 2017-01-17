@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 import * as d3 from 'd3';
 import Editor from './Editor.js';
-import HardCode from './hardCoding.js'
 import './App.css';
+import HardCode from './hardCoding.js'
 
 class BigHex extends Component {
 

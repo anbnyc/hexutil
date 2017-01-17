@@ -13,8 +13,12 @@
   color: white;
 }
 
-.App-header h4{
-  margin: 10px 0px 10px 0px;
+.App-header h3{
+  margin: 8px 0px 8px 0px;
+}
+
+p{
+  font-size: 12px;
 }
 
 .App-intro {

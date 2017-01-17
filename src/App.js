@@ -9,6 +9,7 @@ class App extends Component {
         <div className="App-header">
           <h3>Hexagon Puzzle Utility</h3>
           <p>This tool can help you solve a puzzle like "Hex-agony" from <a href="https://www.janestreet.com/puzzles/hex-agony-2/">Jane Street</a>.</p>
+          <p>Inspired by the work on Hexagonal Grids by <a href="redblobgames.com/grids/hexagons/">Red Blob Games</a>.</p>
         </div>
         <BigHex
           hexPerSide={5}
