@@ -7,6 +7,8 @@ class App extends Component {
     return (
       <div className="App">
         <div className="App-header">
+          <h3>Hexagon Puzzle Utility</h3>
+          <p>This tool can help you solve a puzzle like "Hex-agony" from <a href="https://www.janestreet.com/puzzles/hex-agony-2/">Jane Street</a>.</p>
         </div>
         <BigHex
           hexPerSide={5}

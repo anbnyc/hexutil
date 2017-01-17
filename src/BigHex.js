@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import _ from 'lodash';
 import * as d3 from 'd3';
 import Editor from './Editor.js';
+import HardCode from './hardCoding.js'
 import './App.css';
 
 class BigHex extends Component {
@@ -9,7 +10,9 @@ class BigHex extends Component {
   constructor(props){
     super(props);
     this.state = {
-      cellValue: 0
+      cellValue: 0,
+      ruleBreakers: [],
+      ruleOK: "change a value to run test"
     };
     this.handleUserInput = this.handleUserInput.bind(this);
   }
@@ -52,92 +55,18 @@ class BigHex extends Component {
       }));
       data.push(row);
     });
+
+    const defaults = [
+      [0,4,130321,"blue"],
+      [2,0,169,"red"],
+      [8,2,1,"green"],
+      [6,0,0,"red"],
+      [6,6,0,"red"]
+    ];
     
-    // starting vals
-    // data[0][4].color = "blue"; data[0][4].value = 130321;
-    // data[2][0].color = "red"; data[2][0].value = 169;
-    // data[8][2].color = "green"; data[8][2].value = 1;
-    // data[6][0].color = "red"; data[6][0].value = 0;
-    // data[6][6].color = "red"; data[6][6].value = 0;
-
-    let hardCode = [
-      [130490,"red"],
-      [13,"black"],
-      [130321,"red"],
-      [130321,"red"],
-      [130321,"blue"],
-
-      [169,"red"],
-      [0,"red"],
-      [0,"red"],
-      [0,"red"],
-      [130321,"red"],
-      [130321,"red"],
-
-      [169,"red"],
-      [0,"red"],
-      [19,"black"],
-      [0,"red"],
-      [130321,"red"],
-      [0,"red"],
-      [130321,"red"],
-
-      [169,"blue"],
-      [169,"green"],
-      [169,"red"],
-      [169,"red"],
-      [130490,"red"],
-      [169,"red"],
-      [169,"red"],
-      [13,"black"],
-
-      [169,"red"],
-      [169,"red"],
-      [0,"red"],
-      [19,"black"],
-      [130321,"green"],
-      [19,"black"],
-      [0,"red"],
-      [0,"red"],
-      [130321,"red"],
-
-      [0,"red"],
-      [169,"red"],
-      [0,"red"],
-      [19,"black"],
-      [0,"red"],
-      [0,"red"],
-      [0,"red"],
-      [0,"red"],
-
-      [0,"red"],
-      [169,"red"],
-      [130321,"red"],
-      [0,"red"],
-      [0,"red"],
-      [0,"red"],
-      [0,"red"],
-
-      [0,"red"],
-      [130490,"red"],
-      [0,"red"],
-      [0,"red"],
-      [0,"red"],
-      [0,"red"],
-
-      [130321,"red"],
-      [169,"red"],
-      [1,"green"],
-      [0,"red"],
-      [0,"red"]
-    ]
-
-    _.each(data,row=>{
-      _.each(row,cell=>{
-        let entry = hardCode.shift();
-        cell.value = entry[0];
-        cell.color = entry[1];
-      });
+    _.each(defaults,each=>{
+      data[each[0]][each[1]].value = each[2];
+      data[each[0]][each[1]].color = each[3];
     });
 
     this.setState({
@@ -155,19 +84,19 @@ class BigHex extends Component {
 
   render() {
     const dim = (Math.sqrt(3) * this.props.sideLen * (2*this.props.hexPerSide-1));
-    return <div>
-      <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around"}}>
+    return <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around"}}>
+      <div>
         <Editor 
           onUserInput={this.handleUserInput}
           hexRow={this.state.hexRow}
           hexCell={this.state.hexCell}
           cellValue={this.state.cellValue} />
-        <pre>
-          <span>{"PASSES ALL RULES: "+this.state.ruleOK}</span><br/>
-          <span>{"VIOLATIONS: "+this.state.ruleBreakers}</span>
-        </pre>
+        <svg id="big-hex" height={dim} width={dim}></svg>
       </div>
-      <svg id="big-hex" height={dim} width={dim}></svg>
+      <pre>
+        <span>{"SATISFIES RULES\n"+this.state.ruleOK}</span><br/><br/>
+        <span>{"VIOLATIONS\n (r,c):expected \n"+this.state.ruleBreakers.join("\n")}</span>
+      </pre>
     </div>;
   }
   
