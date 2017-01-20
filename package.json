@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "devDependencies": {
+    "babel": "^6.5.2",
+    "babel-preset-es2015": "^6.22.0",
     "gh-pages": "^0.12.0",
     "react-scripts": "0.8.5",
     "riek": "^1.0.7"
@@ -10,8 +12,8 @@
   "homepage": "https://anbnyc.github.io/hexutil",
   "dependencies": {
     "d3": "^4.4.2",
+    "hex-data-gen": "git://github.com/anbnyc/hex-data-gen.git",
     "lodash": "^4.17.4",
-    "hex-data-gen": "^0.0.1",
     "react": "^15.4.2",
     "react-dom": "^15.4.2"
   },
