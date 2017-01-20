@@ -11,6 +11,7 @@
   "dependencies": {
     "d3": "^4.4.2",
     "lodash": "^4.17.4",
+    "hex-data-gen": "^0.0.1",
     "react": "^15.4.2",
     "react-dom": "^15.4.2"
   },
