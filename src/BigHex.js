@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
 import * as d3 from 'd3';
-import HexDataGen from 'hex-data-gen';
+import * as HexDataGen from 'hex-data-gen';
 import Editor from './Editor.js';
-import HardCode from './hardCoding.js';
+// import HardCode from './hardCoding.js';
 import './App.css';
 
 class BigHex extends Component {
@@ -34,7 +34,7 @@ class BigHex extends Component {
   }
 
   componentWillMount(){
-    let data = HexDataGen(this.props.hexPerSide);
+    let data = HexDataGen.default(this.props.hexPerSide);
     const cellPlus = {
       value: null,
       color: "gray",
