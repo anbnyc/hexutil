@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import _ from 'lodash';
 import * as d3 from 'd3';
+import HexDataGen from 'hex-data-gen';
 import Editor from './Editor.js';
+import HardCode from './hardCoding.js';
 import './App.css';
-import HardCode from './hardCoding.js'
 
 class BigHex extends Component {
 
@@ -33,28 +34,23 @@ class BigHex extends Component {
   }
 
   componentWillMount(){
-    let data = [];
-    const hexPerSide = this.props.hexPerSide;
-    _.times(2*this.props.hexPerSide - 1,i=>{
-      // hPS to 2hPS-1 to hPS, eg 5 -> 9 -> 5
-      var rowlen = (2*hexPerSide - 1) - Math.abs((hexPerSide - 1) - i);
-      let row = [];
-      _.times(rowlen,j=>row.push({
-        value: null,
-        color: "gray",
-        row: i,
-        cellLabel: j,
-        cell: j+Math.max(0, i - (hexPerSide - 1)),
-        ruleValue: 0,
-        ruleOK: true,
-        toggleColor: function(){
-          const colors = ["red","blue","green","black","gray"];
-          const newColor = colors[(colors.indexOf(this.color)+1) % colors.length];
-          return this.color = newColor;
-        }
-      }));
-      data.push(row);
-    });
+    let data = HexDataGen(this.props.hexPerSide);
+    const cellPlus = {
+      value: null,
+      color: "gray",
+      ruleValue: 0,
+      ruleOK: true,
+      toggleColor: function(){
+        const colors = ["red","blue","green","black","gray"];
+        const newColor = colors[(colors.indexOf(this.color)+1) % colors.length];
+        return this.color = newColor;
+      }
+    };
+    data.forEach(row=>{
+      row.forEach(cell=>{
+        Object.assign(cell,cellPlus);
+      })
+    })
 
     const defaults = [
       [0,4,130321,"blue"],
@@ -196,7 +192,7 @@ function drawHexes({hexPerSide,sideLen},data){
     .attr("class","coord")
     .attr("x",-1.5*sideLen)
     .attr("y",-.5*r3o2S)
-    .text(d=>"("+d.row+","+d.cellLabel+")");
+    .text(d=>"("+d.row+","+d.cellAlign+")");
 
   tiles
     .on("click",tileClick)

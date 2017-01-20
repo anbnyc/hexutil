@@ -9,6 +9,7 @@
   },
   "homepage": "https://anbnyc.github.io/hexutil",
   "dependencies": {
+    "hex-data-gen": "git://github.com/anbnyc/hex-data-gen.git",
     "react": "^15.4.2",
     "react-dom": "^15.4.2"
   },
