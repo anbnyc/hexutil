@@ -3,7 +3,7 @@ import _ from 'lodash';
 import * as d3 from 'd3';
 import * as HexDataGen from 'hex-data-gen';
 import Editor from './Editor.js';
-// import HardCode from './hardCoding.js';
+// import hardCode from './hardCoding.js';
 import './App.css';
 
 class BigHex extends Component {
@@ -106,7 +106,7 @@ function checkRules(data){
   }
   flatData.forEach(cell=>{
     const matchR = cell.row;
-    const matchC = cell.cell;
+    const matchC = cell.cellAlign;
     if(cell.color === "red"){
       cell.ruleValue = _.chain(flatData)
         .filter(o=>o.color === "blue" && inView(o,matchR,matchC))
@@ -127,7 +127,7 @@ function checkRules(data){
     }
     cell.ruleOK = cell.ruleValue === cell.value;
     if(!cell.ruleOK){
-      ruleCheck.ruleBreakers.push("("+cell.row+","+cell.cell+"):"+cell.ruleValue);
+      ruleCheck.ruleBreakers.push("("+cell.row+","+cell.cellAlign+"):"+cell.ruleValue);
     }
     ruleCheck.ruleOK = ruleCheck.ruleOK && cell.ruleOK;
   });
