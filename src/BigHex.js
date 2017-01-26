@@ -209,11 +209,11 @@ function tileClick(tile){
 
 function tileHover(tile){
   const matchR = tile.row;
-  const matchC = tile.cell;
+  const matchC = tile.cellAlign;
   const matchDiff = matchR - matchC;
   d3.selectAll("polygon")
     .style("opacity",d=>{
-      if(inView(d,matchR,matchC,matchDiff)){
+      if(inView(d,matchR,matchC)){
         return .6;
       } else {
         return .2;
@@ -236,7 +236,7 @@ function unflattenArray(unflatArray,flatArray){
 }
 
 function inView(tile,matchR,matchC){
-  return tile.row === matchR || tile.cell === matchC || tile.row-tile.cell === matchR - matchC;
+  return tile.row === matchR || tile.cellAlign === matchC || tile.row-tile.cellAlign === matchR - matchC;
 }
 
 function hexPath(s,r3o2S){
